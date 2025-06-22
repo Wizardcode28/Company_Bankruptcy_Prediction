@@ -1,139 +1,184 @@
-no missing values found  
-converted dtype from float64 to float32 and int64 to int8  
-then splitting dataframe into features and label  
-then using train_test_split and saving all data to joblib
+# Logistic Regression
 
-now big problem is that data is highly imbalanced, about only 3% cases are bankrupt, we will not prefer accuracy much here
+`(default) solver=lbfgs, penalty=l2  `
+```
+[2900]
+              precision    recall  f1-score   support  
+           0       0.99      0.88      0.94      1324  
+           1       0.18      0.82      0.29        40  
 
-firstly i thought that all columns of data are scaled and also didn't thought about outliers and got following results:
+Confusion Matrix:[[1171  153]  
+                 [   7   33]]  
+ROC AUC Score: 0.93  
+PR AUC score: 0.30  
+Accuracy_score: 0.88  
+best_f1: 0.42  
+best_thresh: 0.81  
+```
+`solver="liblinear",penalty="l2"  `
+```
+[50]  
+              precision    recall  f1-score   support  
+           0       0.99      0.88      0.94      1324  
+           1       0.17      0.80      0.28        40  
 
+Confusion Matrix:  [[1170  154]  
+                   [   8   32]]  
+ROC AUC Score: 0.93  
+PR AUC score: 0.30  
+Accuracy_score: 0.88  
+best_f1: 0.41  
+best_thresh: 0.80  
+```
+`solver="saga",penalty="l1"  `
+```
+[2770]  
+              precision    recall  f1-score   support  
+           0       0.99      0.88      0.94      1324  
+           1       0.17      0.80      0.28        40  
 
-# LOGISTIC REGRESSION (precison , recall , f1-score)
-in log_reg (default) solver-lbfgs, penalty-l2,max_iter-100  
--not using class_weight=balanced (0.08 , 0.02 , 0.03)  
--using class_weight=balanced from now (0.05 , 0.33 , 0.08)  
--now using solver liblinear instead of default lbfgs with l2 penalty(0.05 , 0.35 , 0.08)  
--using l1 penalty for liblinear (0.19 , 0.79 , 0.31)  
--using l1 penalty for solver-saga although very fast (0.04 , 0.44 , 0.07)  
-i saved my best model with score 0.31 and 75 selected features filtered by l1 penalty  
+Confusion Matrix:  [[1171  153]  
+                   [   8   32]]  
+ROC AUC Score: 0.93  
+PR AUC score: 0.30  
+Accuracy_score: 0.88  
+best_f1: 0.42  
+best_thresh: 0.81  
+```
+`solver="liblinear",penalty="l1"  `
+```
+[35]  
+              precision    recall  f1-score   support  
+           0       0.99      0.89      0.94      1324  
+           1       0.18      0.78      0.29        40  
 
-now i use predict_proba method on test set
-precision,recall,thresholds=precision_recall_curve(y_test,y_proba)  
--max f1_score 0.41 for threshold 0.67 (0.71 , 0.29 , 0.41)  
-drawing precision vs thresholds and recall vs thresholds and f1_scores vs thresholds on same figure
+Confusion Matrix:  [[1179  145]  
+                   [   9   31]]  
+ROC AUC Score: 0.93  
+PR AUC score: 0.31  
+Accuracy_score: 0.89  
+best_f1: 0.38  
+best_thresh: 0.86  
+```
+`best_f1 for logistic regression is 0.42`  
+`best model= (default) solver=lbfgs, penalty=l2  `
 
-## ROC Curve (Receiver Operating Characteristics)
-fpr,tpr,threshold=roc_curve(y_test,y_proba)  
--for each value of threshold find f1_score and append in a list  
-now drawing fpr vs threshold, tpr vs threshold , f1_scores vs threshold  
-fpr-false positive rate(how many normal companies were wrongly predicted as bankrupt), tpr-true positive rate/recall  
-plotting fpr vs tpr(graph is fastly increasing which is a good sign)- more tpr for less fpr
-roc_auc_score=0.92  
-pending- stratified k fold and cross validation
+# Decision Tree 
 
-<!-- ## instead of l1, feature selection using l2 penalty -->
+`(default) max_depth=None`  
+```
+           precision    recall  f1-score   support  
+           0       0.98      0.95      0.97      1324  
+           1       0.23      0.45      0.31        40  
 
+Confusion Matrix:  [[1264   60]  
+                   [  22   18]]  
+ROC AUC Score: 0.70  
+PR AUC score: 0.12  
+Accuracy_score: 0.94  
+best_f1: 0.31  
+best_thresh: 0.01  
+```
+```
+max_depth=3, best_f1: 0.35  
+             best_thresh: 0.82  
+max_depth=5, best_f1: 0.36  
+             best_thresh: 0.94  
+max_depth=6, best_f1: 0.38  
+             best_thresh: 0.94            
+max_depth=7, best_f1: 0.36  
+             best_thresh: 0.96  
+max_depth=10,best_f1: 0.33  
+             best_thresh: 0.51  
+```
+`best_f1 for decision tree is 0.38`  
+`best model= max_depth=6  `
+# RandomForestClassifier
 
-# DECISION TREE (max_depth=5)
-making function for outputting for custom threshold=0.67  
-making function checking f1_score for each value of threshold and find value of optimal threshold in range[0.3,0.8]  
-optimal threshold for full range [0,1] is 0.93 while for [0.3,0.8] is 0.76
-(0.19 , 0.60 , 0.29) and (0.20 , 0.56 , 0.30) respectively for 0.76 and 0.93
-here f1_score is almost equal but recall is higher for 0.76 since missing bankrupt one is more costlier than flagging right one
+## *(max_depth=6)*  
+```
+n_estimators=100, best_f1: 0.48  
+                  best_thresh: 0.84
+```
+```
+n_estimators=150, best_f1: 0.49  
+                  best_thresh: 0.84  
 
+precision    recall  f1-score   support  
+           0       0.99      0.92      0.95      1324  
+           1       0.22      0.78      0.34        40  
 
-# RANDOMFORESTCLASSIFIER 
-training model with class_weight=balanced with 100 trees, max_depth=None and using threshold testing for probabilities  
-using predict method (0.67 , 0.08, 0.15)  
-best_thresh=0.3, (0.53 , 0.38 , 0.44)  
+Confusion Matrix: [[1213  111]  
+                  [   9   31]]  
+ROC AUC Score: 0.94  
+PR AUC score: 0.42  
+Accuracy_score: 0.91  
+best_f1: 0.49  
+best_thresh: 0.85           
+```
+```
+n_estimators=200, best_f1: 0.48  
+                  best_thresh: 0.86  
+```
+## *(max_depth=8, n_estimators=150)*  
+```
+         precision    recall  f1-score   support  
+           0       0.99      0.93      0.96      1324  
+           1       0.25      0.75      0.38        40  
 
-using max_depth=5 best_thresh=0.62, (0.33 , 0.56 , 0.42)  
-using max_depth=7 best_thresh=0.57, (0.36 , 0.54 , 0.43)  
-using max_depth=10 best_thresh=0.47 (0.38 , 0.52 , 0.44)  
-using max_depth=8 best_thesh=0.50 (0.37 , 0.56 , 0.45) --it is also same as predict method
-
-# KAGGLE
-param_dist={  
-    'n_estimators': [100,200,300],  
-    'max_depth': [5,10,15,20],  
-    'min_samples_split': [10,20,40,60],  
-    'min_samples_leaf': [5,10,15,20,25],  
-    'max_features': ['sqrt','log2'],  
-    'bootstrap': [True]  
+Confusion Matrix:  
+  [[1235   89]  
+ [  10   30]]  
+ROC AUC Score: 0.95  
+PR AUC score: 0.46  
+Accuracy_score: 0.93  
+best_f1: 0.50  
+best_thresh: 0.82   
+```
+`best_f1 for RandomForestClassifier is 0.50`  
+`best model= (max_depth=8, n_estimators=150)  `
+## *GridSearchCV* 
+```
+params={  
+    "max_depth":[6,8,10],    
+    "max_features":["sqrt","log2"],  
+    "n_estimators":[100,150,200],  
+    "bootstrap":[True],  
 }  
-model=RandomizedSearchCV(  
-    estimator=rnd_clf,  
-    param_distributions=param_dist,  
-    n_iter=30,  
-    scoring="f1",  
-    cv=5,  
-    n_jobs=-1,  
-    verbose=2,  
-    random_state=42  
-)  
-(RandomForestClassifier(class_weight='balanced',   max_depth=20,  
-                        min_samples_leaf=10,   min_samples_split=20,  
-                        random_state=42),  
- {'n_estimators': 100,  
-  'min_samples_split': 20,  
-  'min_samples_leaf': 10,  
-  'max_features': 'sqrt',  
-  'max_depth': 20,  
-  'bootstrap': True},  
- 0.48194325187761555)  
 
-using gridsearchCV  
-    (RandomForestClassifier(class_weight='balanced',   max_depth=15,  
-                            min_samples_leaf=10,   min_samples_split=20),  
-    {'bootstrap': True,  
-    'max_depth': 15,  
-    'max_features': 'sqrt',  
-    'min_samples_leaf': 10,  
-    'min_samples_split': 20,  
-    'n_estimators': 100},  
-    0.4938175846304932)  
+{'bootstrap': True, 'max_depth': 10, 'max_features': 'sqrt', 'n_estimators': 200}   
+best_model.best_score_= 0.9722797806093901  
+              precision    recall  f1-score   support  
+           0       0.99      0.95      0.97      1324  
+           1       0.29      0.72      0.42        40  
 
-new_param_dist2={  
-    'n_estimators': [100,150],  
-    'max_depth': [15],  
-    'min_samples_split': [15,20,25],  
-    'min_samples_leaf': [8,10,12],  
-    'max_features': ['sqrt'],  
-    'bootstrap': [True]  
-}  
-best score:  0.4968845265667229  
-best params:  {'bootstrap': True, 'max_depth': 15,'max_features': 'sqrt', 'min_samples_leaf': 10, 'min_samples_split': 15, 'n_estimators': 150}  
-best model:  RandomForestClassifier  (class_weight='balanced', max_depth=15,  
-                       min_samples_leaf=10,   min_samples_split=15,  
-                       n_estimators=150)  
+Confusion Matrix:  [[1254   70]  
+                   [  11   29]]  
+ROC AUC Score: 0.94  
+PR AUC score: 0.45  
+Accuracy_score: 0.94  
+best_f1: 0.48  
+best_thresh: 0.81  
+```
 
-# feature selection
-for cumulative sum 0.75, 0.90 and 0.95 respectively values are 29, 57 and 72 now i should try for less cumulative sum because this numbers of features are also very high i think     
-26 top features are having importances greater than 0.01 i think i should try with 30 features from now  
-i trained best model which got f1_score 0.49 with all features and tested on 20% set, f1_score-0.41 while with 30 features i got 0.38
-on increasing from 30 to 40 f1-score is now 0.39 now i think i should go to more advanced models           
-# notes
-liblinear- for smaller datasets, Good for binary classification and supports L1 and L2 regularization  
-saga- larger datasets or sparse data, Works with L1, L2, and elasticnet, supports multiclass  
-lbfgs- good default, optimized for l2, better for larger data than liblinear
+# XGBoostClassifier
+```
+n_estimators=500,
+learning_rate=0.05,
+max_depth=5,
+scale_pos_weight=scale_pos_weight,
+eval_metric="aucpr",
+early_stopping_rounds=30
 
-l1 penalty is slow in log_reg bcz forces many coefficients to exactly 0(sparse model), so solver has to perform extra optimization steps to determine which features to drop, and it also introduces non-differentiable steps in cost function
+            precision    recall  f1-score   support
+           0       0.99      0.94      0.97      1324
+           1       0.27      0.70      0.39        40
 
-while training with l1 penalty for both saga and liblinear solver i noticed although saga performed very quickly but poor results thus Faster training is not equal to better performance  
-SAGA uses stochastic updates which can be less stable for smaller datasets and with class imbalance  
-gradient boosting has no native support for class_weight=balanced  
-XGBoost- scale_pos_weight=30.9 (num_negative/num_positive)  
-
-error_raise=warn - to skip bad combos bcz if one
-parameter combination causes failure(memory error), whole thing may stop
-
-/kaggle/warning- writable path  
-/kaggle/input- read only  
-
-❌ Avoid PCA unless you're trying to compress for models like SVM or KNN that suffer in high dimensions, Creates unnamed components, hard to explain  
-# ideas
-also should try roc_auc score  
-trying resampling using smote  
-scaling data ,outliers removal  
-stratified k fold  
-using votingclassifier in the end  
+Confusion Matrix: [[1249   75]
+                  [  12   28]]
+ROC AUC Score: 0.91
+PR AUC score: 0.39
+Accuracy_score: 0.94
+best_f1: 0.45
+best_thresh: 0.81
+```
