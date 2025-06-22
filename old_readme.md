@@ -131,9 +131,6 @@ parameter combination causes failure(memory error), whole thing may stop
 /kaggle/input- read only  
 
 ❌ Avoid PCA unless you're trying to compress for models like SVM or KNN that suffer in high dimensions, Creates unnamed components, hard to explain  
-# ideas
-also should try roc_auc score  
-trying resampling using smote  
-scaling data ,outliers removal  
+# ideas 
 stratified k fold  
 using votingclassifier in the end  
