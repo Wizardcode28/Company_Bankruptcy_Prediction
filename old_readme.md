@@ -29,7 +29,7 @@ now drawing fpr vs threshold, tpr vs threshold , f1_scores vs threshold
 fpr-false positive rate(how many normal companies were wrongly predicted as bankrupt), tpr-true positive rate/recall  
 plotting fpr vs tpr(graph is fastly increasing which is a good sign)- more tpr for less fpr
 roc_auc_score=0.92  
-pending- stratified k fold and cross validation
+<!-- pending- stratified k fold and cross validation -->
 
 <!-- ## instead of l1, feature selection using l2 penalty -->
 
@@ -134,3 +134,6 @@ parameter combination causes failure(memory error), whole thing may stop
 # ideas 
 stratified k fold  
 using votingclassifier in the end  
+
+At first glance i thought that all columns of data are scaled and also didn't thought about outliers and used class_weight:"balanced" (No SMOTE) and trained various models  
+I will share their results in very last for just comparison how things get changed

@@ -33,13 +33,18 @@ hello this is correlation heatmap
 # SMOTE (Synthetic minority oversampling technique)
 ```
 In this imbalanced dataset we have two options either we can use class-weight="balanced" which works in most of the models or we can balance dataset by oversampling minority class
-```
-At first glance i thought that all columns of data are scaled and also didn't thought about outliers and used class_weight:"balanced" (No SMOTE) and trained various models  
-I will share their results in very last for just comparison how things get changed  
+```  
 Now we train various models on this preprocessed and balanced dataset
 
 # Logistic Regression
 ## trying different solvers with l2 and l1
+```
+liblinear- for smaller datasets, Good for binary classification and supports L1 and L2 regularization  
+
+saga- larger datasets or sparse data, Works with L1, L2, and elasticnet, supports multiclass  
+
+lbfgs- good default, optimized for l2, better for larger data than liblinear
+```
 `(default) solver=lbfgs, penalty=l2  `
 ```
 
