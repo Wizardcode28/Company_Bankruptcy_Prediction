@@ -25,11 +25,12 @@ it handles outliers by scaling based on median and IQR
 # Visualizations
 ## Class distributions
 Now biggest problem is that data is highly imbalanced, about only 3% cases are bankrupt so we will not prefer accuracy much here  
-![Class Distributions Plot][images/class_distributions.png]
-## Correlation Heatmap
-hello this is correlation heatmap
 
-`splitting dataset into training and testing set`  
+![Class distributions plot](images/image.png)
+## Correlation Heatmap
+![alt text](images/image-1.png)
+
+`Splitting dataset into training and testing set`  
 # SMOTE (Synthetic minority oversampling technique)
 ```
 In this imbalanced dataset we have two options either we can use class-weight="balanced" which works in most of the models or we can balance dataset by oversampling minority class
@@ -289,19 +290,19 @@ params={
     "bootstrap":[True],  
 }  
 
-{'bootstrap': True, 'max_depth': 8, 'max_features': 'log2', 'n_estimators': 150} 
+{'bootstrap': True, 'max_depth': 8, 'max_features': 'log2', 'n_estimators': 200} 
 grid.best_score_= 0.45
                precision    recall  f1-score   support
-           0       0.99      0.94      0.97      1324
-           1       0.28      0.72      0.40        40
+           0       0.99      0.96      0.97      1324
+           1       0.32      0.60      0.41        40
 
-Confusion Matrix: [[1249   75]
-                  [  11   29]]
+Confusion Matrix: [[1272   52]
+                  [  16   24]]
 ROC AUC Score: 0.94
-PR AUC score: 0.45
-Accuracy_score: 0.94
-best_f1: 0.56
-best_thresh: 0.75
+PR AUC score: 0.46
+Accuracy_score: 0.95
+best_f1: 0.55
+best_thresh: 0.66
 ```
 ## Again with wider parameter space
 ```
@@ -356,13 +357,33 @@ Accuracy_score: 0.95
 best_f1: 0.52
 best_thresh: 0.66
 ```
-`Extracting top features from our best RandomForest model based on`  
-`1) top 30 and 2) features which contribute 95% of whole`
+`Extracting top features from our best RandomForest model based on 1) top 30 and 2) features which contribute 95% of whole`
 ```
 top features (95%) count = 20
-Creating new training and testing set based on top 30 and 20 features
+Creating new training and testing set based on top 30 and 20 features for future testing
 ```
+`plotting top 30 features with their importance levels`
+
+![alt text](images/image-2.png)
+
+`plotting top features with cumulative sum of their importance levels greater than 0.95`
+
+![alt text](images/image-3.png)
+
+`Correlation Heatmap (for top 20 features)`
+
+![alt text](images/image-4.png)
+
+`plotting top5 features vs target`
+
+![alt text](images/image-5.png)
+
+`Showing how top5 important features vary overall`
+
+![alt text](images/image-6.png)
+
 # XGBoostClassifier
+`training on imbalanced dataset(No SMOTE) using scale_pos_weight`
 ```
 n_estimators=500,
 learning_rate=0.05,
@@ -383,6 +404,18 @@ Accuracy_score: 0.94
 best_f1: 0.45
 best_thresh: 0.81
 ```
+### Plotting Graphs to analyze this model
+`Plotting Validation Performance`
+
+![alt text](images/image-9.png)
+
+`Plotting ROC Curve`
+
+![alt text](images/image-10.png)
+
+`Precision Vs Recall`
+
+![alt text](images/image-11.png)
 
 ## GridSearchCV
 ```
@@ -408,6 +441,7 @@ Accuracy_score: 0.97
 best_f1: 0.54
 best_thresh: 0.40
 ```
+
 ## Again GridSearchCV
 ```
 params={
@@ -435,6 +469,16 @@ best_f1: 0.53
 best_thresh: 0.40
 ```
 #### this time best_f1 after threshold optimization and PR AUC score are lower than previous one 0.54 so We will choose best model from previous grid search
+### Plotting Graphs to analyze our best model from grid search
+`Precision, Recall, f1_scores Vs thresholds`
+
+![alt text](images/image-7.png)
+
+`Precision-Recall Curve`
+
+![alt text](images/image-8.png)
+
+
 
 ### With top 20 features performance of best XGBoost model go down
 ### With top 30 features performance of best XGBoost model also lower
@@ -462,3 +506,41 @@ best_f1: 0.52
 best_thresh: 0.26
 ```
 ## Stacking Classifier
+`
+Training on imbalanced dataset and using class_weight
+`
+```
+               precision    recall  f1-score   support
+
+           0       0.99      0.90      0.94      1324
+           1       0.19      0.80      0.30        40
+
+    accuracy                           0.89      1364
+   macro avg       0.59      0.85      0.62      1364
+weighted avg       0.97      0.89      0.92      1364
+
+Confusion Matrix:
+  [[1186  138]
+ [   8   32]]
+ROC AUC Score: 0.94
+PR AUC score: 0.46
+Accuracy_score: 0.89
+best_f1: 0.57
+best_thresh: 0.93
+```
+`
+Training on balanced dataset after using SMOTE
+`
+```
+               precision    recall  f1-score   support
+           0       0.99      0.97      0.98      1324
+           1       0.38      0.53      0.44        40
+
+Confusion Matrix:  [[1289   35]
+                   [  19   21]]
+ROC AUC Score: 0.92
+PR AUC score: 0.47
+Accuracy_score: 0.96
+best_f1: 0.46
+best_thresh: 0.74
+```
