@@ -39,6 +39,7 @@ I will share their results in very last for just comparison how things get chang
 Now we train various models on this preprocessed and balanced dataset
 
 # Logistic Regression
+## trying different solvers with l2 and l1
 `(default) solver=lbfgs, penalty=l2  `
 ```
 
@@ -147,7 +148,7 @@ svm_clf=SVC(
     gamma="scale"
 )
 
-          precision    recall  f1-score   support
+               precision    recall  f1-score   support
            0       0.98      0.66      0.79      1324
            1       0.05      0.57      0.09        40
 
@@ -162,7 +163,7 @@ best_thresh: 0.06
 Here SVM tries to draw a boundary that maximizes margin but with very few minority class samples it heavily favours majority class
 ## *On balanced dataset*
 ```
-             precision    recall  f1-score   support
+               precision    recall  f1-score   support
            0       0.98      0.76      0.86      1324
            1       0.06      0.50      0.11        40
 
@@ -175,19 +176,35 @@ best_f1: 0.13
 best_thresh: 0.83
 ```
 Here balanced dataset performed better but after threshold optimizing imbalanced dataset has better score, but we would focus on balanced dataset bcz it gives a more balanced decision boundary and also helpful for recall
-### *GridSearchCV*
+## *GridSearchCV*
 ```
 params={
     "C":[0.1,0.5,1,2],
     "kernel":["rbf"],
     "gamma":["scale"]
 }
+SVC(C=1, class_weight='balanced', probability=True, random_state=42) 
+
+{'C': 1, 'gamma': 'scale', 'kernel': 'rbf'} 
+grid.best_score_= 0.096
+              precision    recall  f1-score   support
+           0       0.98      0.66      0.79      1324
+           1       0.05      0.57      0.09        40
+
+Confusion Matrix:  [[872 452]
+                   [ 17  23]]
+ROC AUC Score: 0.73
+PR AUC score: 0.10
+Accuracy_score: 0.66
+best_f1: 0.16
+best_thresh: 0.07
 ```
+`In this case, GridSearchCV has chosen model with C=1, means no regularization`
 # Decision Tree 
 
 `(default) max_depth=None`  
 ```
-           precision    recall  f1-score   support  
+               precision    recall  f1-score   support  
            0       0.98      0.95      0.97      1324  
            1       0.23      0.45      0.31        40  
 
@@ -224,7 +241,7 @@ n_estimators=100, best_f1: 0.48
 n_estimators=150, best_f1: 0.49  
                   best_thresh: 0.84  
 
-precision    recall  f1-score   support  
+               precision    recall  f1-score   support  
            0       0.99      0.92      0.95      1324  
            1       0.22      0.78      0.34        40  
 
@@ -242,7 +259,7 @@ n_estimators=200, best_f1: 0.48
 ```
 ## *(max_depth=8, n_estimators=150)*  
 ```
-         precision    recall  f1-score   support  
+               precision    recall  f1-score   support  
            0       0.99      0.94      0.96      1324  
            1       0.26      0.75      0.38        40  
 
@@ -269,19 +286,19 @@ params={
 
 {'bootstrap': True, 'max_depth': 8, 'max_features': 'log2', 'n_estimators': 150} 
 grid.best_score_= 0.45
-              precision    recall  f1-score   support
-           0       0.99      0.96      0.98      1324
-           1       0.33      0.60      0.43        40
+               precision    recall  f1-score   support
+           0       0.99      0.94      0.97      1324
+           1       0.28      0.72      0.40        40
 
-Confusion Matrix: [[1276   48]
-                  [  16   24]]
+Confusion Matrix: [[1249   75]
+                  [  11   29]]
 ROC AUC Score: 0.94
 PR AUC score: 0.45
-Accuracy_score: 0.95
-best_f1: 0.53
-best_thresh: 0.62
+Accuracy_score: 0.94
+best_f1: 0.56
+best_thresh: 0.75
 ```
-## Again with more hyperparameters
+## Again with wider parameter space
 ```
 params={
     "max_depth":[6,8,10],
@@ -294,17 +311,17 @@ params={
 
 {'bootstrap': True, 'max_depth': 8, 'max_features': 'sqrt', 'min_samples_leaf': 10, 'min_samples_split': 20, 'n_estimators': 200}
 grid.best_score_:  0.479
-              precision    recall  f1-score   support
+               precision    recall  f1-score   support
            0       0.99      0.95      0.97      1324
-           1       0.29      0.68      0.41        40
+           1       0.32      0.68      0.44        40
 
-Confusion Matrix:  [[1259   65]
+Confusion Matrix:  [[1267   57]
                    [  13   27]]
 ROC AUC Score: 0.94
-PR AUC score: 0.43
-Accuracy_score: 0.94
-best_f1: 0.50
-best_thresh: 0.70
+PR AUC score: 0.46
+Accuracy_score: 0.95
+best_f1: 0.54
+best_thresh: 0.66
 ```
 ```
 this time results were lower but we have used min_samples_split and min_samples_leaf
@@ -334,18 +351,11 @@ Accuracy_score: 0.95
 best_f1: 0.52
 best_thresh: 0.66
 ```
-## Again tweaking some values
+`Extracting top features from our best RandomForest model based on`  
+`1) top 30 and 2) features which contribute 95% of whole`
 ```
-params={
-    "max_depth":[8],
-    "max_features":["sqrt","log2"],
-    "n_estimators":[150,200],
-    "bootstrap":[True],
-    "min_samples_split":[12,15,18],
-    "min_samples_leaf":[3,5,7,10]
-}
-
-
+top features (95%) count = 20
+Creating new training and testing set based on top 30 and 20 features
 ```
 # XGBoostClassifier
 ```
@@ -420,3 +430,30 @@ best_f1: 0.53
 best_thresh: 0.40
 ```
 #### this time best_f1 after threshold optimization and PR AUC score are lower than previous one 0.54 so We will choose best model from previous grid search
+
+### With top 20 features performance of best XGBoost model go down
+### With top 30 features performance of best XGBoost model also lower
+
+# Ensemble Methods
+## Voting Classifier
+` i have tried first hard voting which is very very bad so we will only use voting=soft for prediction based on probabilities`
+
+`i included first best decision tree along with logistic,randomforest,xgboost but it worsens result`
+## 
+```
+Logistic(max_iter=6000,solver="lbfgs",penalty="l2",C=1)   
+RandomForestClassifier(n_estimators=150,max_features="log2",max_depth=8,bootstrap=True)
+XGBClassifier(n_estimators= 300,gamma= 0, learning_rate= 0.1,max_depth= 5,min_child_weight= 5,scale_pos_weight=scale_pos_weight)
+
+                precision    recall  f1-score   support
+           0       0.97      1.00      0.99      1324
+           1       0.50      0.15      0.23        40
+Confusion Matrix:  [[1318    6]
+                    [  34    6]]
+ROC AUC Score: 0.93
+PR AUC score: 0.40
+Accuracy_score: 0.97
+best_f1: 0.52
+best_thresh: 0.26
+```
+## Stacking Classifier
