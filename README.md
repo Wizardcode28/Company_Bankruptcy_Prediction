@@ -26,7 +26,8 @@ it handles outliers by scaling based on median and IQR
 ## Class distributions
 Now biggest problem is that data is highly imbalanced, about only 3% cases are bankrupt so we will not prefer accuracy much here  
 
-![Class distributions plot](images/image.png)
+![alt text](images/image.png)
+
 ## Correlation Heatmap
 ![alt text](images/image-1.png)
 
@@ -377,11 +378,17 @@ Creating new training and testing set based on top 30 and 20 features for future
 `plotting top5 features vs target`
 
 ![alt text](images/image-5.png)
-
+![alt text](images/image-12.png)
+![alt text](images/image-13.png)
+![alt text](images/image-14.png)
+![alt text](images/image-15.png)  
 `Showing how top5 important features vary overall`
 
 ![alt text](images/image-6.png)
-
+![alt text](images/image-16.png)
+![alt text](images/image-17.png)
+![alt text](images/image-18.png)
+![alt text](images/image-19.png)
 # XGBoostClassifier
 `training on imbalanced dataset(No SMOTE) using scale_pos_weight`
 ```
